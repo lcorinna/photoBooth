@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PhotoBooth</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-theme-gradient min-h-screen flex flex-col items-center py-4 px-2">
+
+  <!-- Telegram Notice -->
+  <div id="telegramNotice" class="hidden fixed inset-0 bg-black bg-opacity-80 z-50 flex items-center justify-center text-center px-4">
+    <div class="bg-white p-6 rounded-xl max-w-sm w-full">
+      <p class="text-gray-800 font-semibold mb-4">
+        Для корректной работы фотобудки, пожалуйста, откройте сайт в обычном браузере.
+      </p>
+      <a href="https://photoBooth.loca.lt" target="_blank"
+         class="inline-block bg-purple-600 text-white px-4 py-2 rounded-lg font-bold hover:bg-purple-700 transition">
+        🔗 Открыть в браузере
+      </a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="w-full flex justify-between items-center mb-4 px-4">
+    <button id="aboutBtn" class="text-white font-semibold underline">О проекте</button>
+    <a href="/gallery.html" class="text-white font-semibold underline">К галерее</a>
+  </header>
+
+  <!-- Модалка -->
+  <div id="modal-container"></div>
+
+  <h1 class="text-white text-3xl sm:text-4xl font-bold mb-6 text-center">📸 Фотобудка</h1>
+
+  <video id="video" autoplay playsinline class="rounded-2xl shadow-xl max-w-full h-auto"></video>
+
+  <div class="flex flex-wrap gap-2 mt-4 justify-center">
+    <button id="switchCamera" class="btn">🔄 Камера</button>
+    <button id="zoomIn" class="btn">➕ Зум</button>
+    <button id="zoomOut" class="btn">➖ Зум</button>
+    <button id="takePhoto" class="btn">📷 Фото</button>
+    <button id="toggleMode" class="btn">🎥 Видео</button>
+    <button id="startStopRecord" class="btn hidden">⏺️ Запись</button>
+  </div>
+
+  <div id="preview" class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-6 w-full max-w-md px-2"></div>
+
+  <button id="uploadAll" class="btn mt-4">⬆️ Отправить все</button>
+
+  <script src="script.js"></script>
+  <script>
+    // Загрузка модалки
+    fetch("modal.html")
+      .then(res => res.text())
+      .then(html => {
+        document.getElementById("modal-container").innerHTML = html;
+
+        const modal = document.getElementById("modal");
+        const closeBtn = document.getElementById("closeModal");
+        const modalContent = document.getElementById("modalContent");
+
+        document.getElementById("aboutBtn").onclick = () => modal.classList.remove("hidden");
+        closeBtn.onclick = () => modal.classList.add("hidden");
+        modal.onclick = (e) => {
+          if (!modalContent.contains(e.target)) modal.classList.add("hidden");
+        };
+      });
+
+    // Обнаружение встроенного браузера Telegram
+    if (navigator.userAgent.includes("Telegram")) {
+      document.getElementById("telegramNotice").classList.remove("hidden");
+    }
+  </script>
+</body>
+</html>
