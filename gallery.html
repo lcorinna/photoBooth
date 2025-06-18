@@ -15,16 +15,16 @@
     <a href="/" class="text-white font-semibold underline">Сделать фото</a>
   </header>
 
-  <!-- Модалка (будет подгружена) -->
+  <!-- Модалка -->
   <div id="modal-container"></div>
 
   <!-- Заголовок -->
-  <h1 class="text-white text-3xl sm:text-4xl font-bold mb-6 text-center">📸 Галерея загруженных фото</h1>
+  <h1 class="text-white text-3xl sm:text-4xl font-bold mb-6 text-center">📸 Галерея загруженных фото и видео</h1>
 
   <!-- Галерея -->
   <div id="gallery" class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full max-w-4xl px-2"></div>
 
-  <!-- Модалка просмотра -->
+  <!-- Модалка просмотра фото -->
   <div id="photoModal" class="fixed inset-0 bg-black bg-opacity-80 hidden items-center justify-center z-50">
     <button id="prevBtn" class="absolute left-4 text-white text-4xl font-bold">‹</button>
     <img id="modalImage" class="max-w-[95%] max-h-[90%] rounded-xl shadow-xl border-4 border-white" alt="Фото" />
@@ -32,6 +32,7 @@
     <button id="closePhotoModal" class="absolute top-4 right-6 text-white text-3xl">✖</button>
   </div>
 
+  <!-- Скрипт -->
   <script>
     let photoList = [];
     let currentIndex = 0;
@@ -60,47 +61,60 @@
         photoList = files;
         const container = document.getElementById("gallery");
         photoList.forEach((src, index) => {
-          const img = document.createElement("img");
-          img.src = src;
-          img.alt = "Фото";
-          img.className = "rounded-xl shadow-md object-cover w-full aspect-square hover:scale-105 transition cursor-pointer";
-          img.onclick = () => openPhotoModal(index);
-          container.appendChild(img);
+          const wrapper = document.createElement("div");
+
+          if (src.endsWith(".webm")) {
+            const video = document.createElement("video");
+            video.src = src;
+            video.controls = true;
+            video.className = "rounded-xl shadow-md object-cover w-full aspect-square";
+            wrapper.appendChild(video);
+          } else {
+            const img = document.createElement("img");
+            img.src = src;
+            img.alt = "Фото";
+            img.className = "rounded-xl shadow-md object-cover w-full aspect-square hover:scale-105 transition cursor-pointer";
+            img.onclick = () => openPhotoModal(index);
+            wrapper.appendChild(img);
+          }
+
+          container.appendChild(wrapper);
         });
       });
 
-    // Навигация по фото
-    const photoModal = document.getElementById("photoModal");
-    const modalImage = document.getElementById("modalImage");
-    const closePhotoModal = document.getElementById("closePhotoModal");
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-
+    // Открытие модалки
     function openPhotoModal(index) {
-      currentIndex = index;
-      modalImage.src = photoList[currentIndex];
-      photoModal.classList.remove("hidden");
+      if (!photoList[index].endsWith(".webm")) {
+        currentIndex = index;
+        modalImage.src = photoList[currentIndex];
+        photoModal.classList.remove("hidden");
+      }
     }
 
+    // Навигация по фото
     function showNextPhoto() {
-      currentIndex = (currentIndex + 1) % photoList.length;
+      do {
+        currentIndex = (currentIndex + 1) % photoList.length;
+      } while (photoList[currentIndex].endsWith(".webm"));
       modalImage.src = photoList[currentIndex];
     }
 
     function showPrevPhoto() {
-      currentIndex = (currentIndex - 1 + photoList.length) % photoList.length;
+      do {
+        currentIndex = (currentIndex - 1 + photoList.length) % photoList.length;
+      } while (photoList[currentIndex].endsWith(".webm"));
       modalImage.src = photoList[currentIndex];
     }
 
-    nextBtn.onclick = showNextPhoto;
-    prevBtn.onclick = showPrevPhoto;
+    document.getElementById("nextBtn").onclick = showNextPhoto;
+    document.getElementById("prevBtn").onclick = showPrevPhoto;
 
-    closePhotoModal.onclick = () => {
+    document.getElementById("closePhotoModal").onclick = () => {
       photoModal.classList.add("hidden");
       modalImage.src = "";
     };
 
-    photoModal.onclick = (e) => {
+    document.getElementById("photoModal").onclick = (e) => {
       if (e.target === photoModal) {
         photoModal.classList.add("hidden");
         modalImage.src = "";
@@ -112,7 +126,7 @@
       if (!photoModal.classList.contains("hidden")) {
         if (e.key === "ArrowRight") showNextPhoto();
         if (e.key === "ArrowLeft") showPrevPhoto();
-        if (e.key === "Escape") closePhotoModal.click();
+        if (e.key === "Escape") document.getElementById("closePhotoModal").click();
       }
     });
   </script>

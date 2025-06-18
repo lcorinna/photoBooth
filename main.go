@@ -11,6 +11,7 @@ import (
 	"os"
 	"strings"
 	"time"
+	"os/exec"
 )
 
 type UploadRequest struct {
@@ -91,13 +92,12 @@ func uploadVideoHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("❌ mkdir:", err)
 	}
 
-	// Уникальное имя
-	filename := fmt.Sprintf("video_%d_%s", time.Now().UnixNano(), handler.Filename)
-	path := "photos/" + filename
-
-	out, err := os.Create(path)
+	// Сохраняем во временный файл
+	tempName := fmt.Sprintf("temp_%d_%s", time.Now().UnixNano(), handler.Filename)
+	tempPath := "photos/" + tempName
+	out, err := os.Create(tempPath)
 	if err != nil {
-		http.Error(w, "Ошибка создания файла", http.StatusInternalServerError)
+		http.Error(w, "Ошибка сохранения временного файла", http.StatusInternalServerError)
 		log.Println("❌ os.Create:", err)
 		return
 	}
@@ -110,7 +110,23 @@ func uploadVideoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println("✅ Видео сохранено:", path)
+	// Имя для конечного файла
+	finalName := fmt.Sprintf("video_%d_fixed.webm", time.Now().UnixNano())
+	finalPath := "photos/" + finalName
+
+	// ffmpeg: поворот (transpose=1 = 90° по часовой стрелке)
+	cmd := exec.Command("ffmpeg", "-i", tempPath, "-vf", "transpose=1", "-c:a", "copy", finalPath)
+	if err := cmd.Run(); err != nil {
+		http.Error(w, "Ошибка обработки видео", http.StatusInternalServerError)
+		log.Println("❌ ffmpeg:", err)
+		_ = os.Remove(tempPath)
+		return
+	}
+
+	// Удаляем временный файл
+	_ = os.Remove(tempPath)
+
+	log.Println("✅ Видео сохранено:", finalPath)
 	w.Write([]byte(`{"status":"video saved"}`))
 }
 

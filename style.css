@@ -19,16 +19,55 @@ body.bg-theme-gradient {
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 0.5rem 1.25rem;
+  padding: 0.4rem 0.8rem;
   border-radius: 1rem;
   font-weight: bold;
   backdrop-filter: blur(4px);
-  transition: transform 0.2s ease, background 0.3s;
+  transition: all 0.25s ease;
+  text-align: center;
+  white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .btn:hover {
   background: rgba(255, 255, 255, 0.25);
   transform: scale(1.05);
+}
+
+/* Основная кнопка действия */
+#mainAction {
+  background: white;
+  color: black;
+  font-size: 1rem;
+  padding: 0.6rem 1.5rem;
+  border-radius: 2rem;
+  font-weight: 700;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  transition: background 0.3s ease;
+}
+
+#mainAction:hover {
+  background: #f1f1f1;
+}
+
+/* Переключатель режима */
+#modeToggle {
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  padding: 0.4rem 1.2rem;
+  border-radius: 1.5rem;
+  font-size: 0.9rem;
+  transition: background 0.25s ease;
+}
+
+#modeToggle:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Заблокированные кнопки */
+button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 /* Заголовки */
@@ -55,7 +94,8 @@ h1, h2 {
   border-radius: 0.75rem;
 }
 
-#preview img {
+#preview img,
+#preview video {
   width: 100%;
   object-fit: cover;
   aspect-ratio: 1 / 1;
@@ -64,7 +104,8 @@ h1, h2 {
   transition: transform 0.2s;
 }
 
-#preview img:hover {
+#preview img:hover,
+#preview video:hover {
   transform: scale(1.02);
 }
 
@@ -80,20 +121,31 @@ h1, h2 {
 }
 
 /* Галерея */
-#gallery img {
+#gallery img,
+#gallery video {
+  width: 100%;
+  object-fit: cover;
+  aspect-ratio: 1 / 1;
   border: 2px solid white;
   border-radius: 0.75rem;
   transition: transform 0.3s ease;
 }
 
-#gallery img:hover {
+#gallery img:hover,
+#gallery video:hover {
   transform: scale(1.05);
 }
 
+/* Зеркальное отображение */
+#video.mirror {
+  transform: scaleX(-1);
+}
+
+/* Тост уведомления */
 @keyframes fadeInOut {
-  0% { opacity: 0; transform: translateY(20px); }
-  10% { opacity: 1; transform: translateY(0); }
-  90% { opacity: 1; transform: translateY(0); }
+  0%   { opacity: 0; transform: translateY(20px); }
+  10%  { opacity: 1; transform: translateY(0); }
+  90%  { opacity: 1; transform: translateY(0); }
   100% { opacity: 0; transform: translateY(20px); }
 }
 
